@@ -39,9 +39,9 @@ def start_handler(event):
         start_button.configure(text='Start')
     else:
         is_running = True
-        start_button.configre(text='Pause')
+        start_button.configure(text='Pause')
         update()
-        
+
 def update():
     global grid_view
 
