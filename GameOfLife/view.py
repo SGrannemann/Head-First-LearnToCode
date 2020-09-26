@@ -4,6 +4,7 @@ import model
 cell_size = 5
 is_running = False
 
+# setup the GUI 
 def setup():
     global root, grid_view, cell_size, start_button, clear_button, choice
 
@@ -16,14 +17,16 @@ def setup():
                         borderwidth=0,
                         highlightthickness=0,
                         bg='white')
+    grid_view.bind('<Button-1>', grid_handler)
     start_button = Button(root, text='Start', width=12)
     start_button.bind('<Button-1>', start_handler)
     clear_button = Button(root, text='Clear', width=12)
+    clear_button.bind('<Button-1>', clear_handler)
 
     choice = StringVar(root)
     choice.set('Choose a Pattern')
 
-    option = OptionMenu(root, choice, 'Choose a Pattern', 'glider', 'glider gun', 'random')
+    option = OptionMenu(root, choice, 'Choose a Pattern', 'glider', 'glider gun', 'random', command=option_handler)
     option.config(width=20)
 
     grid_view.grid(row=0, columnspan=3, padx=20, pady=20)
@@ -31,6 +34,50 @@ def setup():
     option.grid(row=1, column=1, padx=20)
     clear_button.grid(row=1, column=2, sticky=E, padx=20, pady=20)
 
+def grid_handler(event):
+    global grid_view, cell_size
+
+    x = int(event.x / cell_size)
+    y = int(event.y / cell_size)
+
+    if (model.grid_model[x][y] == 1):
+        model.grid_model[x][y] = 0
+        draw_cell(x, y, 'white')
+    else:
+        model.grid_model[x][y] = 1
+        draw_cell(x, y, 'black')
+
+
+def clear_handler(event):
+    global is_running, clear_button
+        
+    is_running = False
+    start_button.configure(text='Start')
+    for i in range(0, model.height):
+        for j in range(0, model.width):
+            model.grid_model[i][j] = 0
+
+    update()
+
+def option_handler(event):
+    global is_running, start_button, choice
+
+    is_running = False
+    start_button.configure(text='Start')
+
+    selection = choice.get()
+
+    if selection == 'glider':
+        model.load_pattern(model.glider_pattern, 10, 10)
+    
+    elif selection == 'glider gun':
+        model.load_pattern(model.glider_gun_pattern, 10, 10)
+
+    elif selection == 'random':
+        model.randomize(model.grid_model, model.width, model.height)
+
+        update()
+# the following is actually controller code
 def start_handler(event):
     global is_running, start_button
 
@@ -42,8 +89,9 @@ def start_handler(event):
         start_button.configure(text='Pause')
         update()
 
+# this is controller code too
 def update():
-    global grid_view
+    global grid_view, root, is_running
 
     grid_view.delete(ALL)
     
@@ -52,7 +100,10 @@ def update():
         for j in range(0, model.width):
             if model.grid_model[i][j] == 1:
                 draw_cell(i, j, 'black')
+    if (is_running):
+        root.after(100, update)
 
+# controller code
 def draw_cell(row, col, color):
     global grid_view, cell_size
 
