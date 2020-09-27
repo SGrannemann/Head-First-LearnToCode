@@ -14,6 +14,7 @@ class Controller():
         self.is_running = False
         self.model = Model()
         self.view = View(self.root, self, self.model)
+        self.update()
         self.root.mainloop()
 
 
