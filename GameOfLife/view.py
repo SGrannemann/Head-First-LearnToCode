@@ -46,6 +46,8 @@ def grid_handler(event):
     else:
         model.grid_model[x][y] = 1
         draw_cell(x, y, 'black')
+    
+    
 
 
 def clear_handler(event):
@@ -76,7 +78,8 @@ def option_handler(event):
     elif selection == 'random':
         model.randomize(model.grid_model, model.width, model.height)
 
-        update()
+    
+    update()
 # the following is actually controller code
 def start_handler(event):
     global is_running, start_button
